@@ -133,9 +133,25 @@ const doAction = (action) => {
         case settings.PAYMENTS_ENABLED:
           initialize(action.value, 'changeSettingPaymentsEnabled')
           break
+
         case settings.PAYMENTS_CONTRIBUTION_AMOUNT:
           setPaymentInfo(action.value)
           break
+
+        case settings.MINIMUM_VISIT_TIME:
+          if (action.value <= 0) break
+
+          synopsis.options.minDuration = action.value
+          updatePublisherInfo()
+          break
+
+        case settings.MINIMUM_VISTS:
+          if (action.value <= 0) break
+
+          synopsis.options.minPublisherVisits = action.value
+          updatePublisherInfo()
+          break
+
         default:
           break
       }
@@ -569,6 +585,8 @@ var enable = (paymentsEnabled) => {
  */
 
 var publisherInfo = {
+  options: undefined,
+
   synopsis: undefined,
 
   _internal: {
@@ -599,13 +617,15 @@ var updatePublisherInfo = () => {
   syncWriter(pathName(synopsisPath), synopsis, () => {})
   publisherInfo.synopsis = synopsisNormalizer()
 
+  publisherInfo.options = synopsis.options
+
   if (publisherInfo._internal.debugP) {
     data = []
     publisherInfo.synopsis.forEach((entry) => {
       data.push(underscore.extend(underscore.omit(entry, [ 'faviconURL' ]), { faviconURL: entry.faviconURL && '...' }))
     })
 
-    console.log('\nupdatePublisherInfo: ' + JSON.stringify(data, null, 2))
+    console.log('\nupdatePublisherInfo: ' + JSON.stringify({ options: publisherInfo.options, synopsis: data }, null, 2))
   }
 
   appActions.updatePublisherInfo(underscore.omit(publisherInfo, [ '_internal' ]))
@@ -869,6 +889,14 @@ var ledgerInfo = {
   buyURL: undefined,
   bravery: undefined,
 
+  // wallet credentials
+  paymentId: undefined,
+  passphrase: undefined,
+
+  // advanced ledger settings
+  minDuration: undefined,
+  minPublisherVisits: undefined,
+
   hasBitcoinHandler: false,
 
   // geoIP/exchange information
@@ -1107,6 +1135,12 @@ var getStateInfo = (state) => {
   var info = state.paymentInfo
   var then = underscore.now() - msecs.year
 
+  ledgerInfo.paymentId = state.properties.wallet.paymentId
+  ledgerInfo.passphrase = state.properties.wallet.keychains.passphrase
+
+  ledgerInfo.minDuration = synopsis.options.minDuration / msecs.second
+  ledgerInfo.minPublisherVisits = synopsis.options.minPublisherVisits
+
   ledgerInfo.created = !!state.properties.wallet
   ledgerInfo.creating = !ledgerInfo.created
 
@@ -1228,7 +1262,6 @@ var getPaymentInfo = () => {
 
       info = underscore.extend(info, underscore.pick(body, [ 'buyURL', 'buyURLExpires', 'balance', 'unconfirmed', 'satoshis' ]))
       info.address = client.getWalletAddress()
-      info.passphrase = client.getWalletPassphrase()
       if ((amount) && (currency)) {
         info = underscore.extend(info, { amount: amount, currency: currency })
         if ((body.rates) && (body.rates[currency])) {

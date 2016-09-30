@@ -13,6 +13,7 @@ const siteUtil = require('../state/siteUtil')
 const siteSettings = require('../state/siteSettings')
 const appUrlUtil = require('../lib/appUrlUtil')
 const electron = require('electron')
+const fs = require('fs')
 const app = electron.app
 const ipcMain = electron.ipcMain
 const messages = require('../constants/messages')
@@ -567,6 +568,14 @@ const handleAppAction = (action) => {
       break
     case AppConstants.APP_SET_DICTIONARY:
       appState = appState.setIn(['dictionary', 'locale'], action.locale)
+      break
+    case AppConstants.APP_BACKUP_KEYS:
+      const paymentId = appState.get('ledgerInfo').get('paymentId')
+      const passphrase = appState.get('ledgerInfo').get('passphrase')
+      const message = 'Your ledger keys are ' + paymentId + ' and ' + passphrase
+      const filePath = app.getPath('userData') + '/backup_keys.html'
+
+      fs.writeFile(filePath, message)
       break
     case AppConstants.APP_CLEAR_DATA:
       if (action.clearDataDetail.get('browserHistory')) {

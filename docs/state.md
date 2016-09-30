@@ -477,8 +477,8 @@ WindowStore
       error: object              // error object returned
     }
   },
-  publisherInfo: [               // one entry for each publisher having a non-zero `score`
-    {
+  publisherInfo: {
+    synopsis: [ { // one entry for each publisher having a non-zero `score`
       rank: number,              // i.e., 1, 2, 3, ...
       verified: boolean,         // there is a verified wallet for this publisher
       site: string,              // publisher name, e.g., "wikipedia.org"
@@ -492,8 +492,12 @@ WindowStore
       percentage: number,        // i.e., 0, 1, ... 100
       publisherURL: string,      // publisher site, e.g., "https://wikipedia.org/"
       faviconURL: string         // i.e., "data:image/...;base64,..."
+    } ],
+    options: {
+      minDuration: number,       // e.g., 8000 for 8 seconds
+      minPublisherVisits: number // e.g., 0
     }
-  ],
+  }
   autofillAddressDetail: {
     name: string,
     organization: string,

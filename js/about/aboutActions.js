@@ -76,6 +76,15 @@ const AboutActions = {
   },
 
   /**
+   * Generates a file with the users backup keys
+   */
+  generateKeyFile: function () {
+    AboutActions.dispatchAction({
+      actionType: AppConstants.APP_BACKUP_KEYS
+    })
+  },
+
+  /**
    * Click through a certificate error.
    *
    * @param {string} url - The URL with the cert error

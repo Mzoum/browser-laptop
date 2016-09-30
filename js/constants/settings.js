@@ -55,7 +55,9 @@ const settings = {
   HARDWARE_ACCELERATION_ENABLED: 'advanced.hardware-acceleration-enabled',
   PDFJS_ENABLED: 'advanced.pdfjs-enabled',
   DEFAULT_ZOOM_LEVEL: 'advanced.default-zoom-level',
-  SMOOTH_SCROLL_ENABLED: 'advanced.smooth-scroll-enabled'
+  SMOOTH_SCROLL_ENABLED: 'advanced.smooth-scroll-enabled',
+  MINIMUM_VISIT_TIME: 'advanced.minimum-visit-time',
+  MINIMUM_VISTS: 'advanced.minimum-visits'
 }
 
 module.exports = settings
